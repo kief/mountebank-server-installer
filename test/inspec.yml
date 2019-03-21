@@ -1,0 +1,9 @@
+name: mountebank-server
+title: Mountebank server installation tests
+maintainer: Kief Morris
+copyright: Kief Morris
+copyright_email: cloudspin@kief.com
+license: Apache-2.0
+summary: Test the installation of Mountebank on an Ubuntu server
+version: 0.1.0
+description: Test the installation of Mountebank on an Ubuntu server

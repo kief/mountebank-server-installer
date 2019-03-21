@@ -1,0 +1,6 @@
+.*
+!.gitignore
+/.bundle/
+my-stack.tfvars
+my-backend.tf
+_work

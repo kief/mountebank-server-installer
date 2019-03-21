@@ -1,0 +1,20 @@
+---
+driver:
+  name: docker
+
+provisioner:
+  name: shell
+  script:    'src/install-mountebank.sh'
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-18.04
+
+suites:
+  - name: default
+    verifier:
+      inspec_tests:
+        - test
+    attributes:
