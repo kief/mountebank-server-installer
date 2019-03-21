@@ -2,47 +2,44 @@
 
 set -e -x
 
-cd /tmp
-curl -sSL -o mountebank_2.0.0_amd64.deb "https://s3.amazonaws.com/mountebank/v2.0/mountebank_2.0.0_amd64.deb"
-dpkg -i mountebank_2.0.0_amd64.deb
+useradd --user-group --system mountebank
 
-# # create mountebank_user group
-#       group:
-#         name: "{{ mountebank_user }}"
-#         state: present
+curl -sSL -o /tmp/mountebank_2.0.0_amd64.deb "https://s3.amazonaws.com/mountebank/v2.0/mountebank_2.0.0_amd64.deb"
+dpkg -i /tmp/mountebank_2.0.0_amd64.deb
+rm /tmp/mountebank_2.0.0_amd64.deb
 
-# # create mountebank_user
-#       user:
-#         name: "{{ mountebank_user }}"
-#         group: "{{ mountebank_user }}"
-#         system: yes
+mkdir -p --mode=0755 /var/log/mountebank
+chown mountebank:mountebank /var/log/mountebank
 
-# # Install mountebank
-#       yum:
-#         name: https://s3.amazonaws.com/mountebank/v1.12/mountebank-1.12.0-1.x86_64.rpm
+# cat << EOF > /usr/lib/systemd/system/mountebank.service
+# [Unit]
+# Description=Mountebank mocking service
+# Documentation=https://mbtest.org
+# After=network.target firewalld.service
 
-# # Create mountebank log directory
-#       file:
-#         path: /var/log/mountebank
-#         state: directory
-#         owner: "{{ mountebank_user }}"
-#         group: "{{ mountebank_user }}"
-#         mode: 0755
+# [Service]
+# Type=simple
+# User=mountebank
+# # default mountebank install puts it in /usr/local/bin/
+# ExecStart=/usr/local/bin/mb --port 2525 --logfile /var/log/mountebank/mountebank.log
+# ExecReload=/usr/local/bin/mb restart
+# ExecStop=/usr/local/bin/mb stop
+# WorkingDirectory=/var/log/mountebank
+# TimeoutStartSec=0
+# # kill all of the processes in the cgroup started by mountebank
+# KillMode=control-group
+# Restart=on-failure
+# RestartSec=60
 
-# # Install mountebank service config file
-#       template:
-#         src: templates/mountebank.service.j2
-#         dest: /usr/lib/systemd/system/mountebank.service
-#         mode: 0644
-#         owner: root
-#         group: root
+# [Install]
+# WantedBy=multi-user.target
+# EOF
 
-#     # reload because we changed mountebank.service files
-# # Reload daemon configs 
-#       command: systemctl daemon-reload
+# chmod 0644 /usr/lib/systemd/system/mountebank.service
 
-# # Start mountebank service
-#       service:
-#         name: mountebank
-#         state: started
-#         enabled: yes
+# systemctl daemon-reload
+# systemctl enable mountebank
+# systemctl start mountebank
+
+cd /var/log/mountebank
+nohup su mountebank -c '/usr/local/bin/mb --port 2525 --logfile /var/log/mountebank/mountebank.log &'

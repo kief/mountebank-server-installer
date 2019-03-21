@@ -3,8 +3,8 @@ driver:
   name: docker
 
 provisioner:
-  name: shell
-  script:    'src/install-mountebank.sh'
+  name:   shell
+  script: 'src/install-mountebank.sh'
 
 verifier:
   name: inspec
@@ -13,8 +13,11 @@ platforms:
   - name: ubuntu-18.04
 
 suites:
-  - name: default
+  - name: on_the_server
     verifier:
       inspec_tests:
-        - test
-    attributes:
+        - test/on_the_server
+  - name: from_outside_the_server
+    verifier:
+      inspec_tests:
+        - test/from_outside_the_server

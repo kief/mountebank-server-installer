@@ -1,0 +1,9 @@
+name: mountebank-server
+title: Test from outside the server instance
+maintainer: Kief Morris
+copyright: Kief Morris
+copyright_email: cloudspin@kief.com
+license: Apache-2.0
+summary: Test network connections to Mountebank
+version: 0.1.0
+description: Test network connections to Mountebank
