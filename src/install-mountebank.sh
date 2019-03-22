@@ -43,3 +43,38 @@ chown mountebank:mountebank /var/log/mountebank
 
 cd /var/log/mountebank
 nohup su mountebank -c '/usr/local/bin/mb --port 2525 --logfile /var/log/mountebank/mountebank.log &'
+
+apt-get install -y netcat
+timeout 20 sh -c 'until nc -z localhost 2525; do sleep 1; done'
+
+RESPONSE=${1}
+
+cat > /tmp/imposter.json <<-END_IMPOSTER
+{
+  "port": 8080,
+  "protocol": "http",
+  "stubs": [
+    {
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "body": {
+              "whoami": "${RESPONSE}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+END_IMPOSTER
+
+cat /tmp/imposter.json
+
+curl -sS \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
+  --request POST \
+  -d @/tmp/imposter.json \
+  "http://localhost:2525/imposters"

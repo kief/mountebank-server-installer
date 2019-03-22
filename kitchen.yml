@@ -5,6 +5,7 @@ driver:
 provisioner:
   name:   shell
   script: 'src/install-mountebank.sh'
+  arguments: ['local-kitchen']
 
 verifier:
   name: inspec
