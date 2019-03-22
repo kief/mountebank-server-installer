@@ -70,8 +70,6 @@ cat > /tmp/imposter.json <<-END_IMPOSTER
 }
 END_IMPOSTER
 
-cat /tmp/imposter.json
-
 curl -sS \
   --header "Content-Type: application/json" \
   --header "Accept: application/json" \
